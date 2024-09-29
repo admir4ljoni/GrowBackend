@@ -24,7 +24,9 @@ class User extends Authenticatable
         'role',
         'img_profile',
         'img_ktp',
-        'alamat'
+        'alamat',
+        'otp',
+        'is_verified',
     ];
 
     /**
