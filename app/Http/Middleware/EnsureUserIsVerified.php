@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\User;
 
 class EnsureUserIsVerified
 {
@@ -16,7 +17,12 @@ class EnsureUserIsVerified
      */
     public function handle($request, Closure $next)
 {
-    if (!Auth::user()->is_verified) {
+    $user = User::where('email', $request->email)->first();
+    if (!$user) {
+        return response()->json(['error' => 'User not found.'], 404);
+    }
+
+    if (!$user->is_verified) {
         return response()->json(['error' => 'Your account is not verified.'], 403);
     }
 

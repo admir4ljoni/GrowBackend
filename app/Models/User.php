@@ -27,6 +27,7 @@ class User extends Authenticatable
         'alamat',
         'otp',
         'is_verified',
+        'category',
     ];
 
     /**
