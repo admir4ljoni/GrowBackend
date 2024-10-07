@@ -24,7 +24,7 @@ class AuthController extends Controller
             'alamat' => 'required|string',
 
         ]);
-        $otp = rand(100000, 999999);
+        $otp = rand(1000, 9999);
         
         $user = User::create([
             'name' => $request->name,
@@ -39,12 +39,11 @@ class AuthController extends Controller
             'otp' => $otp,
         ]);
         if($user->save()){
-            $tokenResult = $user->createToken('Personal Access Token');
-            $token = $tokenResult->plainTextToken;
-            Mail::to($user->email)->send(new OTPMail($otp));
+            
+            Mail::to($user->email)->send(new OTPMail($otp,));
             return response()->json([
                 'message' => 'User registered successfully. Please verify OTP sent to your email.',
-                'accessToken'=> $token,
+                
             ],201);
         }
         else{
@@ -94,11 +93,13 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->where('otp', $request->otp)->first();
     
         if($user){
+            $tokenResult = $user->createToken('Personal Access Token');
+            $token = $tokenResult->plainTextToken;
             $user->is_verified = true;
             $user->otp = null;  // Hapus OTP setelah verifikasi
             $user->save();
     
-            return response()->json(['message' => 'User verified successfully.']);
+            return response()->json(['message' => 'User verified successfully.', 'accessToken' => $token, 'token_type' => 'Bearer',]);
         } else {
             return response()->json(['error' => 'Invalid OTP or email.'], 400);
         }

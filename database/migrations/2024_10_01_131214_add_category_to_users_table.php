@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('otp')->nullable();
-            $table->boolean('is_verified')->default(false);            
+            $table->string('category');
         });
     }
 
