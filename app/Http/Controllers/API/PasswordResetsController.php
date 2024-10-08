@@ -19,48 +19,55 @@ class PasswordResetsController extends Controller
 
     public function submitEmail(Request $request){
 
-        $request->validate([
-            'email' => 'required|string|email|exists:users',
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|exists:users',
+        ],[
+            'email.required' => 'Email harus diisi',
+            'email.email' => 'Format email tidak valid',
+            'email.exists' => 'Email tidak terdaftar',
         ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed.',
+                'errors' => $validator->errors(),
+            ], 422); 
+        }
         session(['otp_email' => $user->email]);
 
-        $token=Str::random(64);
         $otp = rand(1000, 9999);
 
         User::where('email', $request->email)->update(['otp' => $otp, 'is_verified' => false, ]);
-        DB::table('password_resets')->insert([
-            'email' => $request->email, 
-            'token' => $token,
-            'created_at' => Carbon::now()
-          ]);
+        
         Mail::to($request->email)->send(new OTPMail($otp,));
 
-        return response()->json(['message' => 'We have e-mailed your password reset link!']);
+        return response()->json(['message' => 'We have sent an OTP to your email.']);
 
     }
 
     public function resetPassword(Request $request){
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email|exists:users',
             'password' => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required'
+        ],[
+            'email.required' => 'Email harus diisi',
+            'email.email' => 'Format email tidak valid',
+            'email.exists' => 'Email tidak terdaftar',
+            'password.required' => 'Password harus diisi',
+            'password.min' => 'Password minimal 8 karakter',
+            'password_confirmation.required' => 'Konfirmasi password harus diisi',
+            'password_confirmation.same' => 'Konfirmasi password tidak sama',
         ]);
 
-        
-        $updatePassword=DB::table('password_resets')
-            ->where([
-                'email' => $request->email, 
-            ])
-            ->first();
-
-        if(!$updatePassword){
-            return response()->json(['error' => 'Invalid token!']);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed.',
+                'errors' => $validator->errors(),
+            ], 422); 
         }
 
         $user=User::where('email', $request->email)
             ->update(['password' => Hash::make($request->password)]);
-
-        DB::table('password_resets')->where(['email'=> $request->email])->delete();
 
         return response()->json(['message' => 'Your password has been changed!']);
     }   

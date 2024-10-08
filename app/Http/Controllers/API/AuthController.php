@@ -9,21 +9,46 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OTPMail;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     public function register(Request $request){
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'email' => 'required|string|email|max:255|unique:users',
-            'phone'=>'required|string|max:255|unique:users',
-            'img_profile' => 'required|string|max:255',
-            'img_ktp' => 'required|string|max:255',
-            'role' => 'required|string|max:255',
+            'email' => 'required|string|email|unique:users',
+            'phone' => 'required|string|max:255|unique:users',
+            'img_profile' => 'required|string',
+            'img_ktp' => 'required|string',
+            'role' => 'required|string',
             'alamat' => 'required|string',
-
+            'category' => 'required|string',
+        ],[
+            'name.required' => 'Name harus diisi',
+            'password.required' => 'Password harus diisi',
+            'email.required' => 'Email harus diisi',
+            'phone.required' => 'Phone harus diisi',
+            'img_profile.required' => 'Img_profile harus diisi',
+            'img_ktp.required' => 'Img_ktp harus diisi',
+            'role.required' => 'Role harus diisi',
+            'alamat.required' => 'Alamat harus diisi',
+            'category.required' => 'Category harus diisi',
+            'name.max' => 'Name maksimal 255 karakter',
+            'password.min' => 'Password minimal 8 karakter',
+            'email.email' => 'Format email tidak valid',
+            'phone.max' => 'Phone maximal 255 karakter',
+            'email.unique' => 'Email sudah terdaftar',
+            'phone.unique' => 'Phone sudah terdaftar',
+             
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed.',
+                'errors' => $validator->errors(),
+            ], 422); 
+        }
         $otp = rand(1000, 9999);
         
         $user = User::create([
@@ -37,6 +62,7 @@ class AuthController extends Controller
             'alamat' => $request->alamat,
             'is_verified' => false,
             'otp' => $otp,
+            'category' => $request->category
         ]);
         if($user->save()){
             
@@ -51,29 +77,68 @@ class AuthController extends Controller
         }
     }
 
-    public function login(Request $request){
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
-
-        $credentials = request(['email', 'password']);
-        if(!Auth::attempt($credentials))
-        {
+    public function login(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|string|email',
+                'password' => 'required|string',
+            ], [
+                'email.required' => 'Email harus diisi',
+                'email.email' => 'Format email tidak valid',
+                'password.required' => 'Password harus diisi',
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi gagal',
+                    'errors' => $validator->errors(),
+                ], 400);
+            }
+    
+            // Check if email exists
+            $user = User::where('email', $request->email)->first();
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Email tidak terdaftar',
+                ], 404);
+            }
+    
+            // Attempt authentication
+            if (!Auth::attempt($request->only('email', 'password'))) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Password yang Anda masukkan salah',
+                ], 401);
+            }
+    
+            $tokenResult = $user->createToken('Personal Access Token');
+            $token = $tokenResult->plainTextToken;
+    
             return response()->json([
-                'message' => 'Unauthorized'
-            ],401);
+                'status' => true,
+                'message' => 'Login berhasil',
+                'data' => [
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'role' => $user->role,
+                    ],
+                    'access_token' => $token,
+                    'token_type' => 'Bearer',
+                ]
+            ], 200);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan pada server',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $user = User::where('email', $request->email)->first();
-        $tokenResult = $user->createToken('Personal Access Token');
-        $token = $tokenResult->plainTextToken;
-
-        return response()->json([
-            'accessToken' =>$token,
-            'token_type' => 'Bearer',
-        ]);
-
     }
 
     public function logout(Request $request)
