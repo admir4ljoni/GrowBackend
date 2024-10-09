@@ -170,4 +170,37 @@ class AuthController extends Controller
         }
     }
     
+    public function checkEmail(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email',
+            ], [
+                'email.required' => 'Email harus diisi',
+                'email.email' => 'Format email tidak valid',
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi gagal',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+    
+            $exists = User::where('email', $request->email)->exists();
+    
+            return response()->json([
+                'status' => true,
+                'exists' => $exists,
+            ]);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan pada server',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
