@@ -9,6 +9,8 @@ use App\Http\Controllers\API\UmkmController;
 use App\Http\Middleware\EnsureUserIsVerified;
 
 Route::get('getUser', [UserController::class, 'getUser']);
+Route::get('getUmkm', [UmkmController::class, 'getUmkm']);
+
 Route::group(['prefix'=>'auth'],function(){
     Route::post('register', [AuthController::class, 'register']);
     Route::post('verify-otp', [AuthController::class, 'verifyOTP']);
@@ -28,6 +30,9 @@ Route::middleware('auth:sanctum', 'verified')->group(function(){
         Route::post('user/update', [UserController::class, 'update']);  
         Route::prefix('umkm')->group(function () {
             Route::post('create', [UmkmController::class, 'create']);
+            Route::post('update', [UmkmController::class, 'update']);
+            Route::post('delete', [UmkmController::class, 'delete']);
+           
         });
     });
     
