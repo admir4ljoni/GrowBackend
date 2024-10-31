@@ -5,6 +5,12 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Umkm;
 use App\Models\UmkmImage;
+use App\Models\ProductImage;
+use App\Models\LocationImage;
+use App\Models\NIBImage;
+use App\Models\CertificationImage;
+use App\Models\LogoImage;
+use App\Models\NPWPImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +32,19 @@ class UmkmController extends Controller
             'name'=>'required|string|max:255',
             'alamat'=>'required',
             'entity'=>'required',
-             'images.*' => 'required|file|image|max:2048',
+            'assets'=>'required|integer',
+            'market_share'=>'required|integer',
+            'sertifikasi'=>'required',
+            'Pendanaan'=>'required|integer',
+            'peruntukan'=>'required',
+            'Rencana'=>'required',
+            'images.*' => 'required|file|image|max:2048',
+            'product_images.*' => 'required|file|image|max:2048',
+            'location_images.*' => 'required|file|image|max:2048',
+            'nib_images.*' => 'required|file|image|max:2048',
+            'certification_images.*' => 'required|file|image|max:2048',
+            'npwp_images.*' => 'required|file|image|max:2048',
+            'logo_images.*' => 'required|file|image|max:2048',
             'deskripsi'=>'required',
         ]);
 
@@ -36,6 +54,12 @@ class UmkmController extends Controller
             'alamat' => $request->alamat,
             'entity' => $request->entity,
             'user_id' => $user->id,
+            'assets' => $request->assets,
+            'market_share' => $request->market_share,
+            'sertifikasi' => $request->sertifikasi,
+            'Pendanaan' => $request->Pendanaan,
+            'peruntukan' => $request->peruntukan,
+            'Rencana' => $request->Rencana
         ]);
         if ($request->has('images')) {
             foreach ($request->file('images') as $image) {
@@ -44,9 +68,61 @@ class UmkmController extends Controller
                     'umkm_id' => $umkm->id,
                     'image' => $imagePath,
                 ]);
-            }
-
-            
+            }  
+        }
+        if ($request->has('product_images')) {
+            foreach ($request->file('product_images') as $image) {
+                $imagePath = $image->store('product_images', 'public');
+                ProductImage::create([
+                    'umkm_id' => $umkm->id,
+                    'image' => $imagePath,
+                ]);
+            }  
+        }
+        if ($request->has('location_images')) {
+            foreach ($request->file('location_images') as $image) {
+                $imagePath = $image->store('location_images', 'public');
+                LocationImage::create([
+                    'umkm_id' => $umkm->id,
+                    'image' => $imagePath,
+                ]);
+            }  
+        }
+        if ($request->has('nib_images')) {
+            foreach ($request->file('nib_images') as $image) {
+                $imagePath = $image->store('nib_images', 'public');
+                NIBImage::create([
+                    'umkm_id' => $umkm->id,
+                    'image' => $imagePath,
+                ]);
+            }  
+        }
+        if ($request->has('npwp_images')) {
+            foreach ($request->file('npwp_images') as $image) {
+                $imagePath = $image->store('npwp_images', 'public');
+                NPWPImage::create([
+                    'umkm_id' => $umkm->id,
+                    'image' => $imagePath,
+                ]);
+            }  
+        }
+        if ($request->has('logo_images')) {
+            foreach ($request->file('logo_images') as $image) {
+                $imagePath = $image->store('logo_images', 'public');
+                LogoImage::create([
+                    'umkm_id' => $umkm->id,
+                    'image' => $imagePath,
+                ]);
+            }  
+        }
+        if ($request->has('certification_images')) {
+            foreach ($request->file('certification_images') as $image) {
+                $imagePath = $image->store('certification_images', 'public');
+                CertificationImage::create([
+                    'umkm_id' => $umkm->id,
+                    'image' => $imagePath,
+                ]);
+            }  
         }
         return response()->json([
             'status' => true,
@@ -56,15 +132,28 @@ class UmkmController extends Controller
     }    
 
     public function update(Request $request){
-        $validator = Validator::make($request->all(), [
-            'name' => 'sometimes|required',
+        $validator = Validator::make($request->all(), [    
             'alamat' => 'sometimes|required',
-            'entity' => 'sometimes|required',
+            'assets'=>'required|integer',
+            'market_share'=>'required|integer',
+            'sertifikasi'=>'required',
+            'Pendanaan'=>'required|integer',
+            'peruntukan'=>'required',
+            'Rencana'=>'required',
             'images' => 'sometimes|array',
             'images.*' => 'required|file|image|max:2048',
+            'product_images.*' => 'required|file|image|max:2048',
+            'location_images.*' => 'required|file|image|max:2048',
+            'logo_images.*' => 'required|file|image|max:2048',
             'deskripsi' => 'sometimes|required',
             'delete_image_id' => 'sometimes|array', 
-            'delete_image_id.*' => 'exists:umkm_images,id'
+            'delete_image_id.*' => 'exists:umkm_images,id',
+            'delete_product_image_id' => 'sometimes|array', 
+            'delete_product_image_id.*' => 'exists:umkm_images,id',
+            'delete_logo_image_id' => 'sometimes|array', 
+            'delete_logo_image_id.*' => 'exists:umkm_images,id',
+            'delete_location_image_id' => 'sometimes|array', 
+            'delete_location_image_id.*' => 'exists:umkm_images,id',
         ]);
         
 
@@ -85,11 +174,47 @@ class UmkmController extends Controller
             ], 404);
         }
 
-        $umkm->update($request->only(['name', 'alamat', 'entity', 'deskripsi']));
+        $umkm->update($request->only([ 'alamat', 'deskripsi', 'assets', 'market_share', 'sertifikasi', 'Pendanaan', 'peruntukan', 'Rencana' ]));
 
         if ($request->has('delete_image_id')) {
             foreach ($request->delete_image_id as $imageId) {
                 $image=UmkmImage::where('id', $request->delete_image_id)
+                ->where('umkm_id', $umkm->id)->first();
+
+                if ($image) {
+                    Storage::disk('public')->delete($image->image); 
+                    $image->delete();
+                }
+                $image->delete();
+            }
+        }
+        if ($request->has('delete_product_image_id')) {
+            foreach ($request->delete_product_image_id as $imageId) {
+                $image=ProductImage::where('id', $request->delete_product_image_id)
+                ->where('umkm_id', $umkm->id)->first();
+
+                if ($image) {
+                    Storage::disk('public')->delete($image->image); 
+                    $image->delete();
+                }
+                $image->delete();
+            }
+        }
+        if ($request->has('delete_logo_image_id')) {
+            foreach ($request->delete_logo_image_id as $imageId) {
+                $image=LogoImage::where('id', $request->delete_logo_image_id)
+                ->where('umkm_id', $umkm->id)->first();
+
+                if ($image) {
+                    Storage::disk('public')->delete($image->image); 
+                    $image->delete();
+                }
+                $image->delete();
+            }
+        }
+        if ($request->has('delete_location_image_id')) {
+            foreach ($request->delete_location_image_id as $imageId) {
+                $image=LocationImage::where('id', $request->delete_location_image_id)
                 ->where('umkm_id', $umkm->id)->first();
 
                 if ($image) {
@@ -109,7 +234,33 @@ class UmkmController extends Controller
                 ]);
             }
         }
-
+        if ($request->has('product_images')) {
+            foreach ($request->file('product_images') as $image) {
+                $imagePath = $image->store('product_images', 'public');
+                ProductImage::create([
+                    'umkm_id' => $umkm->id,
+                    'image' => $imagePath,
+                ]);
+            }  
+        }
+        if ($request->has('location_images')) {
+            foreach ($request->file('location_images') as $image) {
+                $imagePath = $image->store('location_images', 'public');
+                LocationImage::create([
+                    'umkm_id' => $umkm->id,
+                    'image' => $imagePath,
+                ]);
+            }  
+        }
+        if ($request->has('logo_images')) {
+            foreach ($request->file('logo_images') as $image) {
+                $imagePath = $image->store('logo_images', 'public');
+                LogoImage::create([
+                    'umkm_id' => $umkm->id,
+                    'image' => $imagePath,
+                ]);
+            }  
+        }
         return response()->json([
             'status' => true,
             'message' => 'UMKM berhasil diperbarui.',
