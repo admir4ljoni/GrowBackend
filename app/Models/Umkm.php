@@ -53,4 +53,8 @@ class Umkm extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function LaporanKeuangan(){
+        return $this->hasMany(LaporanKeuangan::class);
+    }
 }
