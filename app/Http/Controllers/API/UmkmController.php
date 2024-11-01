@@ -10,6 +10,7 @@ use App\Models\NIBImage;
 use App\Models\CertificationImage;
 use App\Models\LogoImage;
 use App\Models\NPWPImage;
+use App\Models\LaporanKeuangan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -32,6 +33,18 @@ class UmkmController extends Controller
             'alamat'=>'required',
             'entity'=>'required',
             'assets'=>'required|integer',
+            'q1'=>'required',
+            'q2'=>'required',
+            'q3'=>'required',
+            'q4'=>'required',
+            'omzet1'=>'required|integer',
+            'omzet2'=>'required|integer',
+            'omzet3'=>'required|integer',
+            'omzet4'=>'required|integer',
+            'net_profit1'=>'required|integer',
+            'net_profit2'=>'required|integer',
+            'net_profit3'=>'required|integer',
+            'net_profit4'=>'required|integer',
             'market_share'=>'required|integer',
             'area'=>'required',
             'sertifikasi'=>'required',
@@ -48,6 +61,9 @@ class UmkmController extends Controller
             'deskripsi'=>'required',
         ]);
 
+
+
+
         $umkm = Umkm::create([
             'name' => $request->name,
             'deskripsi' => $request->deskripsi,
@@ -62,6 +78,45 @@ class UmkmController extends Controller
             'peruntukan' => $request->peruntukan,
             'rencana' => $request->rencana
         ]);
+
+        if ($request->has('q1')) {
+            LaporanKeuangan::create([
+                'umkm_id' => $umkm->id,
+                'q1' => $request->q1,
+                'omzet1' => $request->omzet1,
+                'net_profit1' => $request->net_profit1,
+                'periode' => 'Periode 1'
+            ]);    
+        }
+        if ($request->has('q2')) {
+            LaporanKeuangan::create([
+                'umkm_id' => $umkm->id,
+                'q2' => $request->q2,
+                'omzet2' => $request->omzet2,
+                'net_profit2' => $request->net_profit2,
+                'periode' => 'Periode 2'
+            ]);    
+        }
+        if ($request->has('q3')) {
+            LaporanKeuangan::create([
+                'umkm_id' => $umkm->id,
+                'q3' => $request->q1,
+                'omzet1' => $request->omzet3,
+                'net_profit3' => $request->net_profit1,
+                'periode' => 'Periode 3'
+            ]);    
+        }
+        if ($request->has('q4')) {
+            LaporanKeuangan::create([
+                'umkm_id' => $umkm->id,
+                'q4' => $request->q1,
+                'omzet1' => $request->omzet4,
+                'net_profit4' => $request->net_profit1,
+                'periode' => 'Periode 4'
+            ]);    
+        }
+        
+
         if ($request->has('product_images')) {
             foreach ($request->file('product_images') as $image) {
                 $imagePath = $image->store('product_images', 'public');
@@ -124,7 +179,19 @@ class UmkmController extends Controller
     }    
 
     public function update(Request $request){
-        $validator = Validator::make($request->all(), [    
+        $validator = Validator::make($request->all(), [
+            'q1'=>'required',
+            'q2'=>'required',
+            'q3'=>'required',
+            'q4'=>'required',
+            'omzet1'=>'required|integer',
+            'omzet2'=>'required|integer',
+            'omzet3'=>'required|integer',
+            'omzet4'=>'required|integer',
+            'net_profit1'=>'required|integer',
+            'net_profit2'=>'required|integer',
+            'net_profit3'=>'required|integer',
+            'net_profit4'=>'required|integer',    
             'alamat' => 'sometimes|required',
             'assets'=>'required|integer',
             'market_share'=>'required|integer',
@@ -169,6 +236,21 @@ class UmkmController extends Controller
 
         $umkm->update($request->only([ 'alamat', 'deskripsi', 'assets', 'market_share', 'sertifikasi', 'pendanaan', 'peruntukan', 'rencana' ]));
 
+
+        if ($request->has('q1')) {
+            $kuangan= LaporanKeuangan::where('umkm_id', $umkm->id)->first();
+            $kuangan->update($request->only([ 'q1','omzet1','net_profit1']));
+        }else if ($request->has('q2')) {
+            $kuangan= LaporanKeuangan::where('umkm_id', $umkm->id)->first();
+            $kuangan->update($request->only([ 'q2','omzet2','net_profit2']));
+        }else if ($request->has('q3')) {
+            $kuangan= LaporanKeuangan::where('umkm_id', $umkm->id)->first();
+            $kuangan->update($request->only([ 'q3','omzet3','net_profit3']));
+        }else if ($request->has('q4')) {
+            $kuangan= LaporanKeuangan::where('umkm_id', $umkm->id)->first();
+            $kuangan->update($request->only([ 'q4','omzet4','net_profit4']));
+        }
+        
         if ($request->has('delete_product_image_id')) {
             foreach ($request->delete_product_image_id as $imageId) {
                 $image=ProductImage::where('id', $request->delete_product_image_id)
