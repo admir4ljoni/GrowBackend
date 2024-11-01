@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('area');
             $table->integer('market_share');
             $table->string('sertifikasi');
-            $table->bigInteger('Pendanaan');
+            $table->bigInteger('pendanaan');
             $table->string('peruntukan');
-            $table->text('Rencana');
+            $table->text('rencana');
         });
     }
 

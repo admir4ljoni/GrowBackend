@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Umkm;
-use App\Models\UmkmImage;
 use App\Models\ProductImage;
 use App\Models\LocationImage;
 use App\Models\NIBImage;
@@ -34,10 +33,11 @@ class UmkmController extends Controller
             'entity'=>'required',
             'assets'=>'required|integer',
             'market_share'=>'required|integer',
+            'area'=>'required',
             'sertifikasi'=>'required',
-            'Pendanaan'=>'required|integer',
+            'pendanaan'=>'required|integer',
             'peruntukan'=>'required',
-            'Rencana'=>'required',
+            'rencana'=>'required',
             'images.*' => 'required|file|image|max:2048',
             'product_images.*' => 'required|file|image|max:2048',
             'location_images.*' => 'required|file|image|max:2048',
@@ -56,20 +56,12 @@ class UmkmController extends Controller
             'user_id' => $user->id,
             'assets' => $request->assets,
             'market_share' => $request->market_share,
+            'area' => $request->area,
             'sertifikasi' => $request->sertifikasi,
-            'Pendanaan' => $request->Pendanaan,
+            'pendanaan' => $request->pendanaan,
             'peruntukan' => $request->peruntukan,
-            'Rencana' => $request->Rencana
+            'rencana' => $request->rencana
         ]);
-        if ($request->has('images')) {
-            foreach ($request->file('images') as $image) {
-                $imagePath = $image->store('umkm_images', 'public');
-                UmkmImage::create([
-                    'umkm_id' => $umkm->id,
-                    'image' => $imagePath,
-                ]);
-            }  
-        }
         if ($request->has('product_images')) {
             foreach ($request->file('product_images') as $image) {
                 $imagePath = $image->store('product_images', 'public');
@@ -136,10 +128,11 @@ class UmkmController extends Controller
             'alamat' => 'sometimes|required',
             'assets'=>'required|integer',
             'market_share'=>'required|integer',
+            'area'=>'required',
             'sertifikasi'=>'required',
-            'Pendanaan'=>'required|integer',
+            'pendanaan'=>'required|integer',
             'peruntukan'=>'required',
-            'Rencana'=>'required',
+            'rencana'=>'required',
             'images' => 'sometimes|array',
             'images.*' => 'required|file|image|max:2048',
             'product_images.*' => 'required|file|image|max:2048',
@@ -174,20 +167,8 @@ class UmkmController extends Controller
             ], 404);
         }
 
-        $umkm->update($request->only([ 'alamat', 'deskripsi', 'assets', 'market_share', 'sertifikasi', 'Pendanaan', 'peruntukan', 'Rencana' ]));
+        $umkm->update($request->only([ 'alamat', 'deskripsi', 'assets', 'market_share', 'sertifikasi', 'pendanaan', 'peruntukan', 'rencana' ]));
 
-        if ($request->has('delete_image_id')) {
-            foreach ($request->delete_image_id as $imageId) {
-                $image=UmkmImage::where('id', $request->delete_image_id)
-                ->where('umkm_id', $umkm->id)->first();
-
-                if ($image) {
-                    Storage::disk('public')->delete($image->image); 
-                    $image->delete();
-                }
-                $image->delete();
-            }
-        }
         if ($request->has('delete_product_image_id')) {
             foreach ($request->delete_product_image_id as $imageId) {
                 $image=ProductImage::where('id', $request->delete_product_image_id)
@@ -225,15 +206,6 @@ class UmkmController extends Controller
             }
         }
 
-        if ($request->has('images')) {
-            foreach ($request->file('images') as $image) {
-                $imagePath = $image->store('umkm_images', 'public');
-                UmkmImage::create([
-                    'umkm_id' => $umkm->id,
-                    'image' => $imagePath,
-                ]);
-            }
-        }
         if ($request->has('product_images')) {
             foreach ($request->file('product_images') as $image) {
                 $imagePath = $image->store('product_images', 'public');
@@ -268,35 +240,11 @@ class UmkmController extends Controller
         ], 200);
     }
 
-    public function getUmkm(){
+    public function getAllUmkm(){
         $umkm = Umkm::all();
         return response()->json([
             'status' => true,
             'data' => $umkm
         ]);
-    }
-
-    public function delete(){
-        $user = auth()->user();
-        $umkm = Umkm::where('user_id', $user->id)->first();
-        if (!$umkm) {
-            return response()->json([
-                'status' => false,
-                'message' => 'UMKM tidak ditemukan atau Anda tidak memiliki akses.'
-            ], 404);
-        }
-
-        $image=UmkmImage::where('umkm_id', $umkm->id)->get();
-        foreach ($image as $img) {
-            Storage::disk('public')->delete($img->image); 
-            $img->delete();
-        }
-        $umkm->delete();
-        return response()->json([
-            'status' => true,
-            'message' => 'UMKM berhasil dihapus.'
-        ], 200);
-
-        
     }
 }
