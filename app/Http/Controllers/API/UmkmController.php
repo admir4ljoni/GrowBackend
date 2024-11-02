@@ -51,7 +51,7 @@ class UmkmController extends Controller
             'pendanaan'=>'required|integer',
             'peruntukan'=>'required',
             'rencana'=>'required',
-            'images.*' => 'required|file|image|max:2048',
+            
             'product_images.*' => 'required|file|image|max:2048',
             'location_images.*' => 'required|file|image|max:2048',
             'nib_images.*' => 'required|file|image|max:2048',
@@ -200,14 +200,10 @@ class UmkmController extends Controller
             'pendanaan'=>'required|integer',
             'peruntukan'=>'required',
             'rencana'=>'required',
-            'images' => 'sometimes|array',
-            'images.*' => 'required|file|image|max:2048',
             'product_images.*' => 'required|file|image|max:2048',
             'location_images.*' => 'required|file|image|max:2048',
             'logo_images.*' => 'required|file|image|max:2048',
             'deskripsi' => 'sometimes|required',
-            'delete_image_id' => 'sometimes|array', 
-            'delete_image_id.*' => 'exists:umkm_images,id',
             'delete_product_image_id' => 'sometimes|array', 
             'delete_product_image_id.*' => 'exists:umkm_images,id',
             'delete_logo_image_id' => 'sometimes|array', 
@@ -251,30 +247,6 @@ class UmkmController extends Controller
             $kuangan->update($request->only([ 'q4','omzet4','net_profit4']));
         }
         
-        if ($request->has('delete_product_image_id')) {
-            foreach ($request->delete_product_image_id as $imageId) {
-                $image=ProductImage::where('id', $request->delete_product_image_id)
-                ->where('umkm_id', $umkm->id)->first();
-
-                if ($image) {
-                    Storage::disk('public')->delete($image->image); 
-                    $image->delete();
-                }
-                $image->delete();
-            }
-        }
-        if ($request->has('delete_logo_image_id')) {
-            foreach ($request->delete_logo_image_id as $imageId) {
-                $image=LogoImage::where('id', $request->delete_logo_image_id)
-                ->where('umkm_id', $umkm->id)->first();
-
-                if ($image) {
-                    Storage::disk('public')->delete($image->image); 
-                    $image->delete();
-                }
-                $image->delete();
-            }
-        }
         if ($request->has('delete_location_image_id')) {
             foreach ($request->delete_location_image_id as $imageId) {
                 $image=LocationImage::where('id', $request->delete_location_image_id)
@@ -320,6 +292,14 @@ class UmkmController extends Controller
             'message' => 'UMKM berhasil diperbarui.',
             'data' => $umkm->load('images')
         ], 200);
+    }
+
+    public function find($id){
+        $umkm = Umkm::find($id);
+        return response()->json([
+            'status' => true,
+            'data' => $umkm
+        ]);
     }
 
     public function getAllUmkm(){
