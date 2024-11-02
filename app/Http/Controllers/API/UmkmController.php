@@ -82,36 +82,36 @@ class UmkmController extends Controller
         if ($request->has('q1')) {
             LaporanKeuangan::create([
                 'umkm_id' => $umkm->id,
-                'q1' => $request->q1,
-                'omzet1' => $request->omzet1,
-                'net_profit1' => $request->net_profit1,
+                'quarter' => $request->q1,
+                'omzet' => $request->omzet1,
+                'net_profit' => $request->net_profit1,
                 'periode' => 'Periode 1'
             ]);    
         }
         if ($request->has('q2')) {
             LaporanKeuangan::create([
                 'umkm_id' => $umkm->id,
-                'q2' => $request->q2,
-                'omzet2' => $request->omzet2,
-                'net_profit2' => $request->net_profit2,
+                'quarter' => $request->q2,
+                'omzet' => $request->omzet2,
+                'net_profit' => $request->net_profit2,
                 'periode' => 'Periode 2'
             ]);    
         }
         if ($request->has('q3')) {
             LaporanKeuangan::create([
                 'umkm_id' => $umkm->id,
-                'q3' => $request->q1,
-                'omzet1' => $request->omzet3,
-                'net_profit3' => $request->net_profit1,
+                'quarter' => $request->q3,
+                'omzet' => $request->omzet3,
+                'net_profit' => $request->net_profit3,
                 'periode' => 'Periode 3'
             ]);    
         }
         if ($request->has('q4')) {
             LaporanKeuangan::create([
                 'umkm_id' => $umkm->id,
-                'q4' => $request->q1,
-                'omzet1' => $request->omzet4,
-                'net_profit4' => $request->net_profit1,
+                'quarter' => $request->q4,
+                'omzet' => $request->omzet4,
+                'net_profit' => $request->net_profit4,
                 'periode' => 'Periode 4'
             ]);    
         }
@@ -234,17 +234,33 @@ class UmkmController extends Controller
 
 
         if ($request->has('q1')) {
-            $kuangan= LaporanKeuangan::where('umkm_id', $umkm->id)->first();
-            $kuangan->update($request->only([ 'q1','omzet1','net_profit1']));
+            $keuangan= LaporanKeuangan::where('umkm_id', $umkm->id)->where('periode', 'Periode 1')->first();
+            $keuangan->update([
+                'quarter' => $request->q1,
+                'omzet' => $request->omzet1,
+                'net_profit' => $request->net_profit1,
+            ]);
         }else if ($request->has('q2')) {
-            $kuangan= LaporanKeuangan::where('umkm_id', $umkm->id)->first();
-            $kuangan->update($request->only([ 'q2','omzet2','net_profit2']));
+            $keuangan= LaporanKeuangan::where('umkm_id', $umkm->id)->where('periode', 'Periode 2')->first();
+            $keuangan->update([
+                'quarter' => $request->q2,
+                'omzet' => $request->omzet2,
+                'net_profit' => $request->net_profit2,
+            ]);
         }else if ($request->has('q3')) {
-            $kuangan= LaporanKeuangan::where('umkm_id', $umkm->id)->first();
-            $kuangan->update($request->only([ 'q3','omzet3','net_profit3']));
+            $keuangan= LaporanKeuangan::where('umkm_id', $umkm->id)->where('periode', 'Periode 3')->first();
+            $keuangan->update([
+                'quarter' => $request->q3,
+                'omzet' => $request->omzet3,
+                'net_profit' => $request->net_profit3,
+            ]);
         }else if ($request->has('q4')) {
-            $kuangan= LaporanKeuangan::where('umkm_id', $umkm->id)->first();
-            $kuangan->update($request->only([ 'q4','omzet4','net_profit4']));
+            $keuangan= LaporanKeuangan::where('umkm_id', $umkm->id)->where('periode', 'Periode 4')->first();
+            $keuangan->update([
+                'quarter' => $request->q4,
+                'omzet' => $request->omzet4,
+                'net_profit' => $request->net_profit4,
+            ]);
         }
         
         if ($request->has('delete_location_image_id')) {
