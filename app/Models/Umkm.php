@@ -15,6 +15,13 @@ class Umkm extends Model
         'user_id',
         'deskripsi',
         'entity',
+        'assets',
+        'area',
+        'market_share',
+        'sertifikasi',
+        'pendanaan',
+        'peruntukan',
+        'rencana',
     ];
 
     public function images()
