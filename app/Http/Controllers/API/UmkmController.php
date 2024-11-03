@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Umkm;
+use App\Models\User;
 use App\Models\ProductImage;
 use App\Models\LocationImage;
 use App\Models\NIBImage;
@@ -20,8 +21,7 @@ class UmkmController extends Controller
 {
     public function create(Request $request)
     {
-        $user = Auth::user();
-
+        $user = auth()->user();
         if ($user->umkm) {
             return response()->json([
                 'status' => false,
@@ -73,6 +73,7 @@ class UmkmController extends Controller
             $umkm = Umkm::create([
                 'name' => $request->name,
                 'deskripsi' => $request->deskripsi,
+                'category' => $user->category,
                 'alamat' => $request->alamat,
                 'entity' => $request->entity,
                 'user_id' => $user->id,
@@ -339,8 +340,11 @@ class UmkmController extends Controller
         ]);
     }
 
-    public function getAllUmkm(){
-        $umkm = Umkm::all();
+    public function getUmkm(Request $request){
+        $validator = Validator::make($request->all(), [
+            'category' => 'required|string',
+        ]);
+        $umkm = Umkm::where('category', $request->category)->get();
         return response()->json([
             'status' => true,
             'data' => $umkm
