@@ -73,7 +73,6 @@ class UmkmController extends Controller
             $umkm = Umkm::create([
                 'name' => $request->name,
                 'deskripsi' => $request->deskripsi,
-                'category' => $user->category,
                 'alamat' => $request->alamat,
                 'entity' => $request->entity,
                 'user_id' => $user->id,
@@ -341,10 +340,12 @@ class UmkmController extends Controller
     }
 
     public function getAllUmkm(){
-        $umkm = Umkm::all();
+        
+        $umkm = Umkm::with('user:id,category')->has('user')->get();
         return response()->json([
             'status' => true,
             'data' => $umkm
+            
         ]);
     }
 }

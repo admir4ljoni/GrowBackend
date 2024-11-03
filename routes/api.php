@@ -9,7 +9,7 @@ use App\Http\Controllers\API\UmkmController;
 use App\Http\Middleware\EnsureUserIsVerified;
 
 Route::get('get-all-user', [UserController::class, 'getAllUser']);
-Route::post('get-all-umkm', [UmkmController::class, 'getAllUmkm']);
+Route::get('get-all-umkm', [UmkmController::class, 'getAllUmkm']);
 Route::get('umkm/find/{id}', [UmkmController::class, 'find']);
 
 Route::group(['prefix'=>'auth'],function(){
