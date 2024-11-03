@@ -340,11 +340,8 @@ class UmkmController extends Controller
         ]);
     }
 
-    public function getUmkm(Request $request){
-        $validator = Validator::make($request->all(), [
-            'category' => 'required|string',
-        ]);
-        $umkm = Umkm::where('category', $request->category)->get();
+    public function getAllUmkm(){
+        $umkm = Umkm::all();
         return response()->json([
             'status' => true,
             'data' => $umkm
