@@ -49,19 +49,23 @@ class Umkm extends Model
         return $this->hasMany(NPWPImage::class);
     }
 
-    public function logoImages(){
+    public function logoImages()
+    {
         return $this->hasMany(LogoImage::class);
     }
 
-    public function ProductImages(){
+    public function ProductImages()
+    {
         return $this->hasMany(ProductImage::class);
     }
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function LaporanKeuangan(){
+    public function LaporanKeuangan()
+    {
         return $this->hasMany(LaporanKeuangan::class);
     }
 }

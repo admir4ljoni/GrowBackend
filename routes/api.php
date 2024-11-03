@@ -10,6 +10,7 @@ use App\Http\Middleware\EnsureUserIsVerified;
 
 Route::get('get-all-user', [UserController::class, 'getAllUser']);
 Route::get('get-all-umkm', [UmkmController::class, 'getAllUmkm']);
+Route::get('umkm/find/{id}', [UmkmController::class, 'find']);
 
 Route::group(['prefix'=>'auth'],function(){
     Route::post('register', [AuthController::class, 'register']);
@@ -31,7 +32,6 @@ Route::middleware('auth:sanctum', 'verified')->group(function(){
 	    Route::get('getUser', [UserController::class, 'getUserData']);
         Route::post('user/update', [UserController::class, 'update']); 
         Route::prefix('umkm')->group(function () {
-            Route::get('find/{id}', [UmkmController::class, 'find']);
             Route::post('create', [UmkmController::class, 'create']);
             Route::post('update', [UmkmController::class, 'update']);
             Route::post('delete', [UmkmController::class, 'delete']);
