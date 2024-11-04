@@ -30,35 +30,35 @@ class UmkmController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'alamat' => 'required|string',
-            'entity' => 'required|string',
-            'assets' => 'required|numeric',
-            'q1' => 'required|string',
-            'q2' => 'required|string',
-            'q3' => 'required|string',
-            'q4' => 'required|string',
-            'omzet1' => 'required|numeric',
-            'omzet2' => 'required|numeric',
-            'omzet3' => 'required|numeric',
-            'omzet4' => 'required|numeric',
-            'net_profit1' => 'required|numeric',
-            'net_profit2' => 'required|numeric',
-            'net_profit3' => 'required|numeric',
-            'net_profit4' => 'required|numeric',
-            'market_share' => 'required|numeric',
-            'area' => 'required|string',
-            'sertifikasi' => 'required|string',
-            'pendanaan' => 'required|numeric',
-            'peruntukan' => 'required|string',
-            'rencana' => 'required|string',
-            'deskripsi' => 'required|string',
-            'product_images.*' => 'required|file|image|max:2048',
-            'location_images.*' => 'required|file|image|max:2048',
-            'nib_images.*' => 'required|file|image|max:2048',
-            'certification_images.*' => 'required|file|image|max:2048',
-            'npwp_images.*' => 'required|file|image|max:2048',
-            'logo_images.*' => 'required|file|image|max:2048',
+            'name' => 'string|max:255',
+            'alamat' => 'string',
+            'entity' => 'string',
+            'assets' => 'numeric',
+            'q1' => 'string',
+            'q2' => 'string',
+            'q3' => 'string',
+            'q4' => 'string',
+            'omzet1' => 'numeric',
+            'omzet2' => 'numeric',
+            'omzet3' => 'numeric',
+            'omzet4' => 'numeric',
+            'net_profit1' => 'numeric',
+            'net_profit2' => 'numeric',
+            'net_profit3' => 'numeric',
+            'net_profit4' => 'numeric',
+            'market_share' => 'numeric',
+            'area' => 'string',
+            'sertifikasi' => 'string',
+            'pendanaan' => 'numeric',
+            'peruntukan' => 'string',
+            'rencana' => 'string',
+            'deskripsi' => 'string',
+            'product_images.*' => 'file|image|max:2048',
+            'location_images.*' => 'file|image|max:2048',
+            'nib_images.*' => 'file|image|max:2048',
+            'certification_images.*' => 'file|image|max:2048',
+            'npwp_images.*' => 'file|image|max:2048',
+            'logo_images.*' => 'file|image|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -332,7 +332,7 @@ class UmkmController extends Controller
     }
 
     public function find($id){
-        $umkm = Umkm::find($id);
+        $umkm = Umkm::with('user:id,category')->findOrFail($id);
         return response()->json([
             'status' => true,
             'data' => $umkm
