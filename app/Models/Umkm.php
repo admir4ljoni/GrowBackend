@@ -22,7 +22,6 @@ class Umkm extends Model
         'pendanaan',
         'peruntukan',
         'rencana',
-        'category'
     ];
 
     public function images()

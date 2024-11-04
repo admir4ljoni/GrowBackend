@@ -9,9 +9,8 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller 
 {
-    public function getUserData(Request $request)
+    public function getUserData(Request $request) // get data tiap user nntinya untuk diupdate
     {
-        // get data tiap user nntinya untuk nntinya diupdate
         $user = auth()->user();
         
         if (!$user) {

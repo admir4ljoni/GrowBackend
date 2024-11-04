@@ -33,9 +33,9 @@ Route::middleware('auth:sanctum', 'verified')->group(function(){
         Route::post('user/update', [UserController::class, 'update']); 
         Route::prefix('umkm')->group(function () {
             Route::post('create', [UmkmController::class, 'create']);
+            Route::get('get-data', [UmkmController::class, 'getUmkmData']);
             Route::post('update', [UmkmController::class, 'update']);
             Route::post('delete', [UmkmController::class, 'delete']);
-           
         });		
     });
     

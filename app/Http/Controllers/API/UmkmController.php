@@ -348,4 +348,24 @@ class UmkmController extends Controller
             
         ]);
     }
+    
+    public function getUmkmData(Request $request)
+    {
+        $user = auth()->user();
+        $umkm = $user->umkm;
+        
+        $umkm = Umkm::where('user_id', auth()->id())->first();
+        
+        if (!$umkm) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access'
+            ], 401);
+        }
+    
+        return response()->json([
+            'status' => true,
+            'data' => $umkm
+        ]);
+    }
 }
