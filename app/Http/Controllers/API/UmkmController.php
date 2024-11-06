@@ -331,31 +331,50 @@ class UmkmController extends Controller
         ], 200);
     }
 
-    public function find($id){
-        $umkm = Umkm::with('user:id,category')->findOrFail($id);
+    public function find($id) {
+        $umkm = Umkm::with([
+            'user:id,category',
+            'LaporanKeuangan:id,periode,quarter,omzet,net_profit,umkm_id',
+            'nibImages:id,image,umkm_id',
+            'certificationImages:id,image,umkm_id',
+            'logoImages:id,image,umkm_id',
+            'productImages:id,image,umkm_id',
+            'images:id,image,umkm_id',
+            'locationImages:id,image,umkm_id',
+            'npwpImages:id,image,umkm_id',
+        ])->findOrFail($id);
+    
         return response()->json([
             'status' => true,
             'data' => $umkm
         ]);
     }
+    
 
-    public function getAllUmkm(){
-        
-        $umkm = Umkm::with('user:id,category')->has('user')->get();
+    public function getAllUmkm()
+    {
+        $umkm = Umkm::with([
+            'user:id,category',
+            'logoImages:id,image,umkm_id'
+        ])->get();
+    
         return response()->json([
             'status' => true,
             'data' => $umkm
-            
         ]);
     }
+    
     
     public function getUmkmData(Request $request)
     {
         $user = auth()->user();
-        $umkm = $user->umkm;
-        
-        $umkm = Umkm::where('user_id', auth()->id())->first();
-        
+        $umkm = Umkm::where('user_id', $user->id)
+            ->with([
+                'laporanKeuangan:id,periode,quarter,omzet,net_profit,umkm_id',
+                'logoImages:id,image,umkm_id'
+            ])
+            ->first();
+    
         if (!$umkm) {
             return response()->json([
                 'status' => false,
@@ -368,4 +387,6 @@ class UmkmController extends Controller
             'data' => $umkm
         ]);
     }
+    
+    
 }
