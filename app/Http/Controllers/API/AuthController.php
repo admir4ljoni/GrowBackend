@@ -15,12 +15,12 @@ class AuthController extends Controller
 {
     public function register(Request $request){
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:users',
+            'name' => 'required|string|max:255',
             'password' => 'required|string|min:8',
             'email' => 'required|string|email|unique:users',
             'phone' => 'required|string|max:255|unique:users',
-            'img_profile' => 'required|string',
-            'img_ktp' => 'required|string',
+            'img_profile' => 'file|image|max:2048',
+            'img_ktp' => 'file|image|max:2048',
             'role' => 'required|string',
             'alamat' => 'required|string',
             'category' => 'required|string',
