@@ -126,6 +126,7 @@ class AuthController extends Controller
                         'name' => $user->name,
                         'email' => $user->email,
                         'role' => $user->role,
+                        'category' => $user->category
                     ],
                     'access_token' => $token,
                     'token_type' => 'Bearer',
