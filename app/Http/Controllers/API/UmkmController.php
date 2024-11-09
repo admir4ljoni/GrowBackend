@@ -368,12 +368,12 @@ class UmkmController extends Controller
     public function getUmkmData(Request $request)
     {
         $user = auth()->user();
-        $umkm = Umkm::where('user_id', $user->id)
-            ->with([
-                'laporanKeuangan:id,periode,quarter,omzet,net_profit,umkm_id',
-                'logoImages:id,image,umkm_id'
-            ])
-            ->first();
+        $umkm = Umkm::with([
+            'laporanKeuangan:id,periode,quarter,omzet,net_profit,umkm_id',
+            'logoImages:id,image,umkm_id',
+            'user:id,category'
+        ])->where('user_id', $user->id)->first();
+ 
     
         if (!$umkm) {
             return response()->json([
