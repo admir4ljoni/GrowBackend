@@ -9,6 +9,23 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller 
 {
+    public function getUserData(Request $request) // get data tiap user nntinya untuk diupdate
+    {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access'
+            ], 401);
+        }
+        return response()->json([
+            'status' => true,
+            'data' => $user
+        ]);
+
+        
+    }
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -55,26 +72,7 @@ class UserController extends Controller
         }
     }
 
-    public function getUser(Request $request)
-    {
-        // Get authenticated user
-        $user = auth()->user();
-        
-        if (!$user) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized access'
-            ], 401);
-        }
-        return response()->json([
-            'status' => true,
-            'data' => $user
-        ]);
-
-        
-    }
-
-    public function getAllUser(){
+    public function getAllUser(){   //get semua user
         $user = User::all();
         return response()->json($user);
     }

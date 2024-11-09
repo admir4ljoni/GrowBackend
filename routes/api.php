@@ -11,7 +11,10 @@ use App\Http\Middleware\EnsureUserIsVerified;
 use App\Http\Controllers\ConversationController;
 
 Route::get('get-all-user', [UserController::class, 'getAllUser']);
-Route::group(['prefix' => 'auth'], function () {
+Route::get('get-all-umkm', [UmkmController::class, 'getAllUmkm']);
+Route::get('umkm/find/{id}', [UmkmController::class, 'find']);
+
+Route::group(['prefix'=>'auth'],function(){
     Route::post('register', [AuthController::class, 'register']);
     Route::post('verify-otp', [AuthController::class, 'verifyOTP']);
     Route::post('check-email', [AuthController::class, 'checkEmail']);
@@ -28,11 +31,14 @@ Route::group(['prefix' => 'reset-password'], function () {
 Route::middleware('auth:sanctum', 'verified')->group(function () {
     Route::middleware([EnsureUserIsVerified::class])->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
-        Route::post('user/update', [UserController::class, 'update']);
-        Route::get('getUser', [UserController::class, 'getUser']);
+	      Route::get('getUser', [UserController::class, 'getUserData']);
+        Route::post('user/update', [UserController::class, 'update']); 
         Route::prefix('umkm')->group(function () {
             Route::post('create', [UmkmController::class, 'create']);
-        });
+            Route::get('get-data', [UmkmController::class, 'getUmkmData']);
+            Route::post('update', [UmkmController::class, 'update']);
+            Route::post('delete', [UmkmController::class, 'delete']);
+        });		
 
         // for chat
         Route::get('/conversations', [ConversationController::class, 'index']);

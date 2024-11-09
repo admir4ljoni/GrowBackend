@@ -15,14 +15,57 @@ class Umkm extends Model
         'user_id',
         'deskripsi',
         'entity',
+        'assets',
+        'area',
+        'market_share',
+        'sertifikasi',
+        'pendanaan',
+        'peruntukan',
+        'rencana',
     ];
 
     public function images()
     {
         return $this->hasMany(UmkmImage::class);
     }
+
+    public function locationImages()
+    {
+        return $this->hasMany(LocationImage::class);
+    }
+
+    public function nibImages()
+    {
+        return $this->hasMany(NIBImage::class);
+    }
+
+    public function certificationImages()
+    {
+        return $this->hasMany(CertificationImage::class);
+    }
+
+    public function npwpImages()
+    {
+        return $this->hasMany(NPWPImage::class);
+    }
+
+    public function logoImages()
+    {
+        return $this->hasMany(LogoImage::class);
+    }
+
+    public function ProductImages()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function LaporanKeuangan()
+    {
+        return $this->hasMany(LaporanKeuangan::class);
     }
 }

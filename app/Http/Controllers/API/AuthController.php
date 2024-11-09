@@ -15,12 +15,12 @@ class AuthController extends Controller
 {
     public function register(Request $request){
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:users',
+            'name' => 'required|string|max:255',
             'password' => 'required|string|min:8',
             'email' => 'required|string|email|unique:users',
             'phone' => 'required|string|max:255|unique:users',
-            'img_profile' => 'required|string',
-            'img_ktp' => 'required|string',
+            'img_profile' => 'file|image|max:2048',
+            'img_ktp' => 'file|image|max:2048',
             'role' => 'required|string',
             'alamat' => 'required|string',
             'category' => 'required|string',
@@ -56,8 +56,8 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'phone' => $request->phone,
-            'img_profile' => $request->img_profile,
-            'img_ktp' => $request->img_ktp,
+            'img_profile' => $request->hasFile('img_profile') ? $request->file('img_profile')->store('img_profile', 'public') : null,
+            'img_ktp' => $request->hasFile('img_ktp') ? $request->file('img_ktp')->store('img_ktp', 'public') : null,
             'role' => $request->role,
             'alamat' => $request->alamat,
             'is_verified' => false,
@@ -66,7 +66,7 @@ class AuthController extends Controller
         ]);
         if($user->save()){
             
-            Mail::to($user->email)->send(new OTPMail($otp,));
+            Mail::to($user->email)->send(new OTPMail($otp, $user->name));
             return response()->json([
                 'message' => 'User registered successfully. Please verify OTP sent to your email.',
                 
@@ -126,6 +126,7 @@ class AuthController extends Controller
                         'name' => $user->name,
                         'email' => $user->email,
                         'role' => $user->role,
+                        'category' => $user->category
                     ],
                     'access_token' => $token,
                     'token_type' => 'Bearer',

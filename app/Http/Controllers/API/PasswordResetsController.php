@@ -115,11 +115,13 @@ class PasswordResetsController extends Controller
     public function resendOTP(Request $request)
     {
         $email = $request->email ?? session('otp_email');
-
+    
+        // Periksa apakah email disediakan dari request atau session
         if (!$email) {
             return response()->json(['error' => 'No email found for OTP resend. Please provide an email or request OTP again.'], 400);
         }
-
+    
+        // Cari user berdasarkan email
         $user = User::where('email', $email)->first();
     
         if (!$user) {
