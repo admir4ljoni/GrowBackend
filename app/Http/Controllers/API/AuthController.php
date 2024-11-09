@@ -66,7 +66,7 @@ class AuthController extends Controller
         ]);
         if($user->save()){
             
-            Mail::to($user->email)->send(new OTPMail($otp,));
+            Mail::to($user->email)->send(new OTPMail($otp, $user->name));
             return response()->json([
                 'message' => 'User registered successfully. Please verify OTP sent to your email.',
                 
