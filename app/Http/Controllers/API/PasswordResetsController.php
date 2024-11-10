@@ -43,13 +43,13 @@ class PasswordResetsController extends Controller
         session(['otp_email' => $user->email]);
 
         $otp = rand(1000, 9999);
-
+        $name= $user->name;
         User::where('email', $request->email)->update([
             'otp' => $otp,
             'is_verified' => false,
         ]);
 
-        Mail::to($request->email)->send(new OTPMail($otp));
+        Mail::to($request->email)->send(new OTPMail($otp, $name));
 
         return response()->json(['message' => 'We have sent an OTP to your email.']);
     }
@@ -134,7 +134,7 @@ class PasswordResetsController extends Controller
             $user->otp = $otp;
             $user->save();
 
-            Mail::to($user->email)->send(new OTPMail($otp, $user->name));
+            Mail::to($user->email)->send(new OTPMail($otp));
 
             return response()->json(['message' => 'OTP for password reset has been sent to your email.'], 200);
         }
@@ -145,11 +145,12 @@ class PasswordResetsController extends Controller
             $user->otp = $otp;
             $user->save();
 
-            Mail::to($user->email)->send(new OTPMail($otp, $user->name));
+            Mail::to($user->email)->send(new OTPMail($otp));
 
             return response()->json(['message' => 'OTP for account verification has been sent to your email.'], 200);
         }
 
         return response()->json(['message' => 'No action needed. User is already verified and not in reset password process.'], 400);
     }
+
 }
