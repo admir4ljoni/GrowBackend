@@ -9,28 +9,32 @@ class ConversationController extends Controller
 {
     public function index(Request $request) {
         $request->validate([
-            'investor_id' => 'required|exists:users,id',
-            'owner_id' => 'required|exists:users,id'
+            'receiverId' => 'required|exists:users,id',
+            'senderId' => 'required|exists:users,id'
         ]);
 
-        $investorId = $request->query('investor_id');
-        $ownerId = $request->query('owner_id');
+        $receiverId = $request->query('receiverId');
+        $senderId = $request->query('senderId');
 
-        $conversation = Conversation::where(function ($query) use ($investorId, $ownerId) {
-            $query->where('user_one_id', $investorId)
-                ->where('user_two_id', $ownerId);
-        })->orWhere(function ($query) use ($investorId, $ownerId) {
-            $query->where('user_one_id', $ownerId)
-                ->where('user_two_id', $investorId);
+        $conversation = Conversation::where(function ($query) use ($receiverId, $senderId) {
+            $query->where('user_one_id', $receiverId)
+                ->where('user_two_id', $senderId);
+        })->orWhere(function ($query) use ($receiverId, $senderId) {
+            $query->where('user_one_id', $senderId)
+                ->where('user_two_id', $receiverId);
         })->first();
 
+
+        if (!$conversation) {
+            return response()->json(['status' => 'Has not yet created']);
+        }
         return response()->json([
             'status' => 'created',
             'data' => $conversation
         ]);
     }
 
-    public function create(Request $request) {
+    public function store(Request $request) {
         $request->validate([
             'user_one_id' => 'required|exists:users,id',
             'user_two_id' => 'required|exists:users,id'

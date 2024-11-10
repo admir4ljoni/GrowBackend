@@ -31,21 +31,21 @@ Route::group(['prefix' => 'reset-password'], function () {
 Route::middleware('auth:sanctum', 'verified')->group(function () {
     Route::middleware([EnsureUserIsVerified::class])->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
-	      Route::get('getUser', [UserController::class, 'getUserData']);
-        Route::post('user/update', [UserController::class, 'update']); 
+        Route::get('getUser', [UserController::class, 'getUserData']);
+        Route::get('getUser/{id}', [UserController::class, 'findUserData']);
+        Route::post('user/update', [UserController::class, 'update']);
         Route::prefix('umkm')->group(function () {
             Route::post('create', [UmkmController::class, 'create']);
             Route::get('get-data', [UmkmController::class, 'getUmkmData']);
             Route::post('update', [UmkmController::class, 'update']);
             Route::post('delete', [UmkmController::class, 'delete']);
-        });		
+        });
 
         // for chat
-        Route::get('/conversations', [ConversationController::class, 'index']);
-        Route::post('/conversations', [ConversationController::class, 'store']);
+        Route::get('/retreive/conversations', [ConversationController::class, 'index']);
+        Route::post('/make/conversations', [ConversationController::class, 'store']);
 
-        Route::get('/messages', [MessageController::class, 'index']);
-        Route::post('/messages', [MessageController::class, 'store']);
+        Route::get('/retreive/messages', [MessageController::class, 'index']);
+        Route::post('/make/messages', [MessageController::class, 'store']);
     });
-
 });

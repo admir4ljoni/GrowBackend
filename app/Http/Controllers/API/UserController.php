@@ -7,12 +7,12 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 
-class UserController extends Controller 
+class UserController extends Controller
 {
     public function getUserData(Request $request) // get data tiap user nntinya untuk diupdate
     {
         $user = auth()->user();
-        
+
         if (!$user) {
             return response()->json([
                 'status' => false,
@@ -23,9 +23,17 @@ class UserController extends Controller
             'status' => true,
             'data' => $user
         ]);
-
-        
     }
+
+    public function findUserData ($id) {
+        $user = User::findOrFail($id);
+
+        return response()->json([
+            'status' => true,
+            'data' => $user
+        ]);
+    }
+
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -35,7 +43,7 @@ class UserController extends Controller
             'alamat'=>'required|string',
         ],[
             'name.required' => 'Name harus diisi',
-            'phone.required' => 'Phone harus diisi', 
+            'phone.required' => 'Phone harus diisi',
             'img_profile.required' => 'Img_profile harus diisi',
             'alamat.required' => 'Alamat harus diisi',
             'name.max' => 'Name maksimal 255 karakter',
@@ -50,7 +58,7 @@ class UserController extends Controller
                 'errors' => $validator->errors(),
             ], 400);
         }
-        
+
         $user = auth()->user();
         if ($user) {
             $user->name = $request->name;

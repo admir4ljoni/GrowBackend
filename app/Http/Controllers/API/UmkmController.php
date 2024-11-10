@@ -93,7 +93,7 @@ class UmkmController extends Controller
                     'omzet' => $request->omzet1,
                     'net_profit' => $request->net_profit1,
                     'periode' => 'Periode 1'
-                ]);    
+                ]);
             }
             if ($request->has('q2')) {
                 LaporanKeuangan::create([
@@ -102,7 +102,7 @@ class UmkmController extends Controller
                     'omzet' => $request->omzet2,
                     'net_profit' => $request->net_profit2,
                     'periode' => 'Periode 2'
-                ]);    
+                ]);
             }
             if ($request->has('q3')) {
                 LaporanKeuangan::create([
@@ -111,7 +111,7 @@ class UmkmController extends Controller
                     'omzet' => $request->omzet3,
                     'net_profit' => $request->net_profit3,
                     'periode' => 'Periode 3'
-                ]);    
+                ]);
             }
             if ($request->has('q4')) {
                 LaporanKeuangan::create([
@@ -120,7 +120,7 @@ class UmkmController extends Controller
                     'omzet' => $request->omzet4,
                     'net_profit' => $request->net_profit4,
                     'periode' => 'Periode 4'
-                ]);    
+                ]);
             }
 
             // Handle Images
@@ -131,9 +131,9 @@ class UmkmController extends Controller
                         'umkm_id' => $umkm->id,
                         'image' => $imagePath,
                     ]);
-                }  
+                }
             }
-            
+
             if ($request->hasFile('location_images')) {
                 foreach ($request->file('location_images') as $image) {
                     $imagePath = $image->store('location_images', 'public');
@@ -141,9 +141,9 @@ class UmkmController extends Controller
                         'umkm_id' => $umkm->id,
                         'image' => $imagePath,
                     ]);
-                }  
+                }
             }
-            
+
             if ($request->hasFile('nib_images')) {
                 foreach ($request->file('nib_images') as $image) {
                     $imagePath = $image->store('nib_images', 'public');
@@ -151,9 +151,9 @@ class UmkmController extends Controller
                         'umkm_id' => $umkm->id,
                         'image' => $imagePath,
                     ]);
-                }  
+                }
             }
-            
+
             if ($request->hasFile('certification_images')) {
                 foreach ($request->file('certification_images') as $image) {
                     $imagePath = $image->store('certification_images', 'public');
@@ -161,9 +161,9 @@ class UmkmController extends Controller
                         'umkm_id' => $umkm->id,
                         'image' => $imagePath,
                     ]);
-                }  
+                }
             }
-            
+
             if ($request->hasFile('npwp_images')) {
                 foreach ($request->file('npwp_images') as $image) {
                     $imagePath = $image->store('npwp_images', 'public');
@@ -171,9 +171,9 @@ class UmkmController extends Controller
                         'umkm_id' => $umkm->id,
                         'image' => $imagePath,
                     ]);
-                }  
+                }
             }
-            
+
             if ($request->hasFile('logo_images')) {
                 foreach ($request->file('logo_images') as $image) {
                     $imagePath = $image->store('logo_images', 'public');
@@ -181,13 +181,13 @@ class UmkmController extends Controller
                         'umkm_id' => $umkm->id,
                         'image' => $imagePath,
                     ]);
-                }  
+                }
             }
 
             return response()->json([
                 'status' => true,
                 'message' => 'UMKM berhasil dibuat beserta gambar.',
-                'data' => $umkm->load(['images', 'locationImages', 'nibImages', 
+                'data' => $umkm->load(['images', 'locationImages', 'nibImages',
                     'certificationImages', 'npwpImages', 'logoImages', 'ProductImages'])
             ], 201);
 
@@ -212,7 +212,7 @@ class UmkmController extends Controller
             'net_profit1'=>'|integer',
             'net_profit2'=>'|integer',
             'net_profit3'=>'|integer',
-            'net_profit4'=>'|integer',    
+            'net_profit4'=>'|integer',
             'alamat' => 'sometimes|',
             'assets'=>'|integer',
             'market_share'=>'|integer',
@@ -225,14 +225,14 @@ class UmkmController extends Controller
             'location_images.*' => '|file|image|max:2048',
             'logo_images.*' => '|file|image|max:2048',
             'deskripsi' => 'sometimes|',
-            'delete_product_image_id' => 'sometimes|array', 
+            'delete_product_image_id' => 'sometimes|array',
             'delete_product_image_id.*' => 'exists:umkm_images,id',
-            'delete_logo_image_id' => 'sometimes|array', 
+            'delete_logo_image_id' => 'sometimes|array',
             'delete_logo_image_id.*' => 'exists:umkm_images,id',
-            'delete_location_image_id' => 'sometimes|array', 
+            'delete_location_image_id' => 'sometimes|array',
             'delete_location_image_id.*' => 'exists:umkm_images,id',
         ]);
-        
+
 
         if ($validator->fails()) {
             return response()->json([
@@ -283,14 +283,14 @@ class UmkmController extends Controller
                 'net_profit' => $request->net_profit4,
             ]);
         }
-        
+
         if ($request->has('delete_location_image_id')) {
             foreach ($request->delete_location_image_id as $imageId) {
                 $image=LocationImage::where('id', $request->delete_location_image_id)
                 ->where('umkm_id', $umkm->id)->first();
 
                 if ($image) {
-                    Storage::disk('public')->delete($image->image); 
+                    Storage::disk('public')->delete($image->image);
                     $image->delete();
                 }
                 $image->delete();
@@ -304,7 +304,7 @@ class UmkmController extends Controller
                     'umkm_id' => $umkm->id,
                     'image' => $imagePath,
                 ]);
-            }  
+            }
         }
         if ($request->has('location_images')) {
             foreach ($request->file('location_images') as $image) {
@@ -313,7 +313,7 @@ class UmkmController extends Controller
                     'umkm_id' => $umkm->id,
                     'image' => $imagePath,
                 ]);
-            }  
+            }
         }
         if ($request->has('logo_images')) {
             foreach ($request->file('logo_images') as $image) {
@@ -322,7 +322,7 @@ class UmkmController extends Controller
                     'umkm_id' => $umkm->id,
                     'image' => $imagePath,
                 ]);
-            }  
+            }
         }
         return response()->json([
             'status' => true,
@@ -333,7 +333,7 @@ class UmkmController extends Controller
 
     public function find($id) {
         $umkm = Umkm::with([
-            'user:id,category',
+            'user:id,category,name,img_profile',
             'LaporanKeuangan:id,periode,quarter,omzet,net_profit,umkm_id',
             'nibImages:id,image,umkm_id',
             'certificationImages:id,image,umkm_id',
@@ -343,13 +343,13 @@ class UmkmController extends Controller
             'locationImages:id,image,umkm_id',
             'npwpImages:id,image,umkm_id',
         ])->findOrFail($id);
-    
+
         return response()->json([
             'status' => true,
             'data' => $umkm
         ]);
     }
-    
+
 
     public function getAllUmkm()
     {
@@ -357,14 +357,14 @@ class UmkmController extends Controller
             'user:id,category',
             'logoImages:id,image,umkm_id'
         ])->get();
-    
+
         return response()->json([
             'status' => true,
             'data' => $umkm
         ]);
     }
-    
-    
+
+
     public function getUmkmData(Request $request)
     {
         $user = auth()->user();
@@ -373,20 +373,19 @@ class UmkmController extends Controller
             'logoImages:id,image,umkm_id',
             'user:id,category'
         ])->where('user_id', $user->id)->first();
- 
-    
+
         if (!$umkm) {
             return response()->json([
                 'status' => false,
                 'message' => 'Unauthorized access'
             ], 401);
         }
-    
+
         return response()->json([
             'status' => true,
             'data' => $umkm
         ]);
     }
-    
-    
+
+
 }
