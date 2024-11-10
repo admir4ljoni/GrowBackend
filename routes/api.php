@@ -43,6 +43,7 @@ Route::middleware('auth:sanctum', 'verified')->group(function () {
 
         // for chat
         Route::get('/retreive/conversations', [ConversationController::class, 'index']);
+        Route::get('/find/conversations', [ConversationController::class, 'getConversations']);
         Route::post('/make/conversations', [ConversationController::class, 'store']);
 
         Route::get('/retreive/messages', [MessageController::class, 'index']);

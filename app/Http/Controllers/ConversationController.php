@@ -29,8 +29,26 @@ class ConversationController extends Controller
             return response()->json(['status' => 'Has not yet created']);
         }
         return response()->json([
-            'status' => 'created',
+            'status' => 'exists',
             'data' => $conversation
+        ]);
+    }
+
+    public function getConversations(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $userId = $request->query('user_id');
+
+        $conversations = Conversation::where('user_one_id', $userId)
+            ->orWhere('user_two_id', $userId)
+            ->get();
+
+        return response()->json([
+            'status' => 'exists',
+            'data' => $conversations
         ]);
     }
 
