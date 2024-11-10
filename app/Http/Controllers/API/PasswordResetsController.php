@@ -43,13 +43,13 @@ class PasswordResetsController extends Controller
         session(['otp_email' => $user->email]);
 
         $otp = rand(1000, 9999);
-
+        $name= $user->name;
         User::where('email', $request->email)->update([
             'otp' => $otp,
             'is_verified' => false,
         ]);
         
-        Mail::to($request->email)->send(new OTPMail($otp));
+        Mail::to($request->email)->send(new OTPMail($otp, $name));
 
         return response()->json(['message' => 'We have sent an OTP to your email.']);
     }
